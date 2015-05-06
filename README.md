@@ -1,13 +1,17 @@
+## Charmander Vector
 This project was forked from Netflix Vector project.
 As such we have left most of the documentation here as is.
 
-Things added:
+##Things added:
 2 new widgets
+
 support for different url scenarios for network widget ( &scenario=1 )
+
 changed default widget to cpu, memory and network
 
-To be added:
+##To be added:
 fix infinity bug for cpu when divide by zero
+
 documentation on how to use scenarios
 
 
