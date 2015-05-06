@@ -23,7 +23,7 @@
     * @name NetworkBytesMetricDataModel
     * @desc
     */
-    function NetworkBytesMetricDataModel(WidgetDataModel, MetricListService, VectorService) {
+    function NetworkBytesMetricDataModel(ScenarioService, $rootScope, WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -43,10 +43,33 @@
             // create derived function
             derivedFunction = function () {
                 var returnValues = [],
+                    matchArray = [],
                     lastValue;
 
+            if ($rootScope.properties.scenario){
+                matchArray = ScenarioService.getScenario();
+            }else{
+                matchArray=[];
+            }
+
+            var scenario = function(key){
+                if (matchArray.length === 0){
+                    return true;
+                }
+
+                var arr = matchArray.$$state.value.data.values || [];
+                for(var a=0; a< arr.length; a++){
+                    //console.log("arr[a]:"+arr[a]+" | key: "+ key); //debug purpose
+                    if (arr[a] === key){
+                        return true;
+                    }
+                }
+
+                return false;
+            };            
+
                 angular.forEach(inMetric.data, function (instance) {
-                    if (instance.values.length > 0) {
+                    if (instance.values.length > 0 && scenario(instance.key)) {
                         lastValue = instance.values[instance.values.length - 1];
                         returnValues.push({
                             timestamp: lastValue.x,
@@ -57,7 +80,7 @@
                 });
 
                 angular.forEach(outMetric.data, function (instance) {
-                    if (instance.values.length > 0) {
+                    if (instance.values.length > 0 && scenario(instance.key)) {
                         lastValue = instance.values[instance.values.length - 1];
                         returnValues.push({
                             timestamp: lastValue.x,

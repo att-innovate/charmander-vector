@@ -41,7 +41,7 @@
 
         function yAxisIntegerTickFormat() {
             return function (d) {
-                return d3.format('f')(d);
+                return d3.format('.02f')(d);
             };
         }
 

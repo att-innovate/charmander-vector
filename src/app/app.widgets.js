@@ -25,6 +25,8 @@
     /* Widgets */
     function widgetDefinitions(MetricDataModel,
                                CumulativeMetricDataModel,
+                               CPUstatMetricTimeSeriesDataModel,
+                               MemoryBytesMetricTimeSeriesDataModel,
                                MemoryUtilizationMetricDataModel,
                                NetworkBytesMetricDataModel,
                                CpuUtilizationMetricDataModel,
@@ -36,6 +38,38 @@
                                CumulativeUtilizationMetricDataModel,
                                vectorConfig) {
         var definitions = [
+            {
+                name: 'att.cpu.utilization',
+                title: 'CPU Utilization',
+                directive: 'line-integer-time-series',
+                dataAttrName: 'data',
+                dataModelType: CPUstatMetricTimeSeriesDataModel,
+                dataModelOptions: {
+                    name: 'cgroup.cpuacct.stat.user'
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'ATT'
+            },
+            {
+                name: 'att.memory.utilization',
+                title: 'Memory Usage',
+                directive: 'line-integer-time-series',
+                dataAttrName: 'data',
+                dataModelType: MemoryBytesMetricTimeSeriesDataModel,
+                dataModelOptions: {
+                    name: 'cgroup.memory.usage'
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'ATT'
+            },
             {
                 name: 'kernel.all.load',
                 title: 'Load Average',
@@ -527,79 +561,19 @@
 
     var defaultWidgets = [
         {
-            name: 'kernel.all.cpu',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'kernel.percpu.cpu',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'kernel.all.runnable',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'kernel.all.load',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'network.interface.bytes',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'network.tcpconn',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'network.interface.packets',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'network.tcp.retrans',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'mem',
+            name: 'att.cpu.utilization',
             size: {
                 width: '50%'
             }
         }, {
-            name: 'mem.vmstat.pgfault',
+            name: 'att.memory.utilization',
             size: {
-                width: '25%'
+                width: '50%'
             }
         }, {
-            name: 'kernel.all.pswitch',
+            name: 'network.interface.bytes',
             size: {
-                width: '25%'
-            }
-        }, {
-            name: 'disk.iops',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'disk.bytes',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'disk.dev.avactive',
-            size: {
-                width: '25%'
-            }
-        }, {
-            name: 'disk.dev.latency',
-            size: {
-                width: '25%'
+                width: '100%'
             }
         }
     ];

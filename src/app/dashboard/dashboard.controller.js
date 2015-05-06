@@ -60,6 +60,7 @@
                     $rootScope.properties.hostspec = $routeParams.hostspec;
                     $log.info('Hostspec: ' + $routeParams.hostspec);
                 }
+                $rootScope.properties.scenario = $routeParams.scenario; //sets the scenario parameters
                 DashboardService.updateHost(vm.inputHost);
             }
 
