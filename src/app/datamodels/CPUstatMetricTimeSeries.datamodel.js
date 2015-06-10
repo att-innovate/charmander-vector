@@ -38,18 +38,20 @@
                             lastValue2.push(instance.previousValue);
                             IdService.getId(instance.key.split('/')[2])
                                 .success(function(data){
-                                    idDictionary[instance.key.split('/')[2]] = data;})
+                                    idDictionary[instance.key.split('/')[2]] = data;
+
+                                })
                                 .error(function(){
                                     idDictionary[instance.key.split('/')[2]] = instance.key;
                             });
-                            //console.log('sys instance.previousValue:'+instance.previousValue);
+
                         }
                     });
 
                     angular.forEach(cpuUserMetric.data, function (instance) {
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             var lastValue = instance.values[instance.values.length - 1];
-                            //console.log('user instance.previousValue:'+instance.previousValue);
+
                             
                             var name = idDictionary[instance.key.split('/')[2]] || instance.key;
 
