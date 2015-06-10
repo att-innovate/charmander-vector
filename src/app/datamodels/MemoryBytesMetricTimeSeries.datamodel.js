@@ -9,7 +9,7 @@
     * @name MemoryBytesMetricTimeSeriesDataModel
     * @desc
     */
-    function MemoryBytesMetricTimeSeriesDataModel(ScenarioService, $rootScope, WidgetDataModel, MetricListService, VectorService) {
+    function MemoryBytesMetricTimeSeriesDataModel(IdService, $rootScope, WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -24,7 +24,8 @@
             // create create base metrics
             var inMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.memory.usage'),
                 //outMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.out.bytes'),
-                derivedFunction;
+                derivedFunction,
+                idDictionary = {};
 
             // create derived function
             derivedFunction = function () {
@@ -32,11 +33,22 @@
                     lastValue;         
 
                 angular.forEach(inMetric.data, function (instance) {
-                    if (instance.values.length > 0 && instance.key.indexOf("docker/")!== -1) {
+                    if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
+                        
+                        IdService.getId(instance.key.split('/')[2])
+                            .success(function(data){
+                                idDictionary[instance.key.split('/')[2]] = data;
+                            }).error(function(){
+                                idDictionary[instance.key.split('/')[2]] = instance.key;
+                        });
+
                         lastValue = instance.values[instance.values.length - 1];
+                        
+                        var name = idDictionary[instance.key.split('/')[2]];
+
                         returnValues.push({
                             timestamp: lastValue.x,
-                            key: instance.key,
+                            key: name,
                             value: instance.previousValue / 1024 / 1024
                         });
                     }

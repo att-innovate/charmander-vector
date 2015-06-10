@@ -8,7 +8,7 @@
     * @name CPUstatMetricTimeSeriesDataModel
     * @desc
     */
-    function CPUstatMetricTimeSeriesDataModel(WidgetDataModel, MetricListService, VectorService) {
+    function CPUstatMetricTimeSeriesDataModel(IdService, WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -23,7 +23,8 @@
             // create create base metrics
             var cpuSysMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.cpuacct.stat.user'),
                 cpuUserMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.cpuacct.stat.system'),
-                derivedFunction;
+                derivedFunction,
+                idDictionary = {};
 
             derivedFunction = function () {
                 var returnValues = [],
@@ -35,17 +36,26 @@
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             //var lastValue = instance.values[instance.values.length - 1];
                             lastValue2.push(instance.previousValue);
-                            console.log("sys instance.previousValue:"+instance.previousValue);
+                            IdService.getId(instance.key.split('/')[2])
+                                .success(function(data){
+                                    idDictionary[instance.key.split('/')[2]] = data;})
+                                .error(function(){
+                                    idDictionary[instance.key.split('/')[2]] = instance.key;
+                            });
+                            //console.log('sys instance.previousValue:'+instance.previousValue);
                         }
                     });
 
                     angular.forEach(cpuUserMetric.data, function (instance) {
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             var lastValue = instance.values[instance.values.length - 1];
-                            console.log("user instance.previousValue:"+instance.previousValue);
+                            //console.log('user instance.previousValue:'+instance.previousValue);
+                            
+                            var name = idDictionary[instance.key.split('/')[2]] || instance.key;
+
                             returnValues.push({
                                 timestamp: lastValue.x,
-                                key: instance.key,
+                                key: name,
                                 //value: lastValue.y / (cpuCount * 1000)
                                 value: instance.previousValue / lastValue2.shift()
                             });
