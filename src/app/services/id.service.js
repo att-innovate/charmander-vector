@@ -13,7 +13,7 @@
         * @desc
         */
         function getId(id) {
-            return $http.get('http://' + $rootScope.properties.host + ':' + '31900' +'/getid/'+id);
+            return $http.get('http://' + $rootScope.properties.host + ':' + '31300' +'/getid/'+id);
         }
 
         //////////
