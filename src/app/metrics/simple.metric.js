@@ -17,7 +17,7 @@
  */
 
  /*global _*/
- 
+
  (function () {
      'use strict';
 
@@ -25,7 +25,7 @@
     * @name SimpleMetric
     * @desc
     */
-    function SimpleMetric($rootScope, $log, MetricService) {
+    function SimpleMetric($rootScope) {
 
         var Metric = function (name) {
             this.name = name || null;
@@ -56,42 +56,9 @@
                 instance = {
                     key: angular.isDefined(iname) ? iname : this.name,
                     iid: iid,
-                    values: [{x: timestamp, y: value}]
+                    values: [{x: timestamp, y: value}, {x: timestamp + 1, y: value}]
                 };
                 self.data.push(instance);
-            }
-        };
-
-        Metric.prototype.pushValues = function (iid, timestamp, value) {
-            var self = this,
-                instance,
-                overflow;
-
-            instance = _.find(self.data, function (el) {
-                return el.iid === iid;
-            });
-
-            if (angular.isDefined(instance) && instance !== null) {
-                instance.values.push({ x: timestamp, y: value });
-                overflow = instance.values.length - (($rootScope.properties.window * 60) / $rootScope.properties.interval);
-                if (overflow > 0) {
-                    instance.values.splice(0, overflow);
-                }
-            } else {
-                instance = {
-                    key: 'Series ' + iid,
-                    iid: iid,
-                    values: [{x: timestamp, y: value}]
-                };
-                self.data.push(instance);
-                MetricService.getInames(self.name, iid)
-                    .then(function (response) {
-                        angular.forEach(response.data.instances, function (value) {
-                            if (value.instance === iid) {
-                                instance.key = value.name;
-                            }
-                        });
-                    });
             }
         };
 

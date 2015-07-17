@@ -16,39 +16,112 @@
  *
  */
 
- /*global d3*/
+ /*global d3, nv*/
 
 (function () {
     'use strict';
 
-    function areaStackedTimeSeries($rootScope, D3Service) {
+    function areaStackedTimeSeries($rootScope, $log, D3Service) {
 
         function link(scope) {
-            scope.yAxisTickFormat = D3Service.yAxisTickFormat;
-            scope.xAxisTickFormat = D3Service.xAxisTickFormat;
-            scope.yFunction = D3Service.yFunction;
-            scope.xFunction = D3Service.xFunction;
             scope.id = D3Service.getId();
-            scope.height = 250;
             scope.flags = $rootScope.flags;
-            scope.$on('widgetResized', function (event, size) {
-                scope.width = size.width || scope.width;
-                scope.height = size.height || scope.height;
-                d3.select('#' + scope.id + ' svg').style({'height': scope.height});
+            scope.legend = true;
+
+            var chart;
+
+            nv.addGraph(function () {
+
+              var yAxisTickFormat = D3Service.yAxisTickFormat(),
+                  height = 250;
+
+              chart = nv.models.stackedAreaChart().options({
+                  duration: 0,
+                  useInteractiveGuideline: true,
+                  interactive: false,
+                  showLegend: true,
+                  showXAxis: true,
+                  showYAxis: true,
+                  showControls: false
+              });
+
+              chart.margin({'left': 35, 'right': 35});
+
+              chart.height(height);
+
+              if (scope.forcey) {
+                  chart.yDomain([0, scope.forcey]);
+              }
+
+              chart.x(D3Service.xFunction());
+              chart.y(D3Service.yFunction());
+
+              chart.xAxis.tickFormat(D3Service.xAxisTickFormat());
+
+              if (scope.percentage) {
+                  yAxisTickFormat = D3Service.yAxisPercentageTickFormat();
+                  chart.yAxis.tickFormat();
+              } else if (scope.integer) {
+                  yAxisTickFormat = D3Service.yAxisIntegerTickFormat();
+                  chart.yAxis.tickFormat();
+              }
+
+              chart.yAxis.tickFormat(yAxisTickFormat);
+
+
+              /* Woraround for NVD3 Bug #1081 (https://github.com/novus/nvd3/issues/1081) */
+
+              chart.interactiveLayer.tooltip.contentGenerator(function (d) {
+                  var header = d.value;
+                  var headerhtml = '<thead><tr><td colspan="3"><strong class="x-value">' + header + '</strong></td></tr></thead>';
+
+                  var bodyhtml = '<tbody>';
+                  var series = d.series;
+                  series.forEach(function (d) {
+                      bodyhtml = bodyhtml + '<tr><td class="legend-color-guide"><div style="background-color: ' + d.color + ';"></div></td><td class="key">' + d.key + '</td><td class="value">' + yAxisTickFormat(d.value) + '</td></tr>';
+                  });
+                  bodyhtml = bodyhtml + '</tbody>';
+                  return '<table>' + headerhtml + bodyhtml + '</table>';
+              });
+
+              /* End of workaround */
+
+              nv.utils.windowResize(chart.update);
+
+              d3.select('#' + scope.id + ' svg')
+                .datum(scope.data)
+                .style({'height': height})
+                .transition().duration(0)
+                .call(chart);
+
+              return chart;
+            });
+
+            scope.$on('updateMetrics', function () {
+                chart.update();
             });
         }
 
         return {
             restrict: 'A',
-            templateUrl: 'app/charts/area-stacked-timeseries.html',
+            templateUrl: 'app/charts/nvd3-chart.html',
             scope: {
-                data: '='
+                data: '=',
+                percentage: '=',
+                integer: '=',
+                forcey: '='
             },
             link: link
         };
     }
 
+    areaStackedTimeSeries.$inject = [
+        '$rootScope',
+        '$log',
+        'D3Service'
+    ];
+
     angular
-        .module('app.directives')
+        .module('app.charts')
         .directive('areaStackedTimeSeries', areaStackedTimeSeries);
 })();

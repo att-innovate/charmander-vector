@@ -36,7 +36,7 @@
         .module('vector.config', []);
 
     angular
-        .module('app.directives', []);
+        .module('app.charts', []);
 
     angular
         .module('app.filters', []);
@@ -57,12 +57,11 @@
             'app.controllers',
             'app.datamodels',
             'app.widgets',
-            'app.directives',
+            'app.charts',
             'app.services',
             'app.filters',
             'app.metrics',
             'vector.config',
-            'nvd3ChartDirectives',
             'angular-flash.service',
             'angular-flash.flash-alert-directive'
         ])

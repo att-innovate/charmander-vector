@@ -99,11 +99,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 4,
+                    integer: true
+                }
             }, {
                 name: 'kernel.all.cpu.sys',
                 title: 'CPU Utilization (System)',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -114,11 +118,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.all.cpu.user',
                 title: 'CPU Utilization (User)',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -129,11 +138,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.all.cpu',
                 title: 'CPU Utilization',
-                directive: 'area-stacked-percentage-force-y-time-series',
+                directive: 'area-stacked-time-series',
                 dataAttrName: 'data',
                 dataModelType: CpuUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -144,11 +158,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.percpu.cpu.sys',
                 title: 'Per-CPU Utilization (System)',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -159,11 +178,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.percpu.cpu.user',
                 title: 'Per-CPU Utilization (User)',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -174,11 +198,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.percpu.cpu',
                 title: 'Per-CPU Utilization',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: PerCpuUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -189,7 +218,12 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'mem.freemem',
                 title: 'Memory Utilization (Free)',
@@ -238,7 +272,7 @@
             }, {
                 name: 'mem',
                 title: 'Memory Utilization',
-                directive: 'area-stacked-integer-time-series',
+                directive: 'area-stacked-time-series',
                 dataAttrName: 'data',
                 dataModelType: MemoryUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -249,11 +283,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Memory'
+                group: 'Memory',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.interface.out.drops',
                 title: 'Network Drops (Out)',
-                directive: 'line-integer-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MetricDataModel,
                 dataModelOptions: {
@@ -264,11 +302,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    forcey: 10,
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.interface.in.drops',
                 title: 'Network Drops (In)',
-                directive: 'line-integer-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MetricDataModel,
                 dataModelOptions: {
@@ -279,11 +322,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    forcey: 10,
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.interface.drops',
                 title: 'Network Drops',
-                directive: 'line-integer-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MultipleMetricDataModel,
                 dataModelOptions: {
@@ -298,11 +346,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    forcey: 10,
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.tcpconn.established',
                 title: 'TCP Connections (Estabilished)',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MetricDataModel,
                 dataModelOptions: {
@@ -313,11 +366,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.tcpconn.time_wait',
                 title: 'TCP Connections (Time Wait)',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MetricDataModel,
                 dataModelOptions: {
@@ -328,11 +385,15 @@
                     width: '25%',
                     height: '250px'
                 },
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.tcpconn.close_wait',
                 title: 'TCP Connections (Close Wait)',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MetricDataModel,
                 dataModelOptions: {
@@ -343,11 +404,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.tcpconn',
                 title: 'TCP Connections',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MultipleMetricDataModel,
                 dataModelOptions: {
@@ -363,11 +428,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.interface.bytes',
                 title: 'Network Throughput (kB)',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: NetworkBytesMetricDataModel,
                 dataModelOptions: {
@@ -378,7 +447,11 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'disk.iops',
                 title: 'Disk IOPS',
@@ -420,7 +493,7 @@
             }, {
                 name: 'disk.dev.avactive',
                 title: 'Disk Utilization',
-                directive: 'line-percentage-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeUtilizationMetricDataModel,
                 dataModelOptions: {
@@ -431,11 +504,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Disk'
+                group: 'Disk',
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
             }, {
                 name: 'kernel.all.pswitch',
                 title: 'Context Switches',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CumulativeMetricDataModel,
                 dataModelOptions: {
@@ -446,11 +524,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'CPU'
+                group: 'CPU',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'mem.vmstat.pgfault',
                 title: 'Page Faults',
-                directive: 'area-stacked-integer-time-series',
+                directive: 'area-stacked-time-series',
                 dataAttrName: 'data',
                 dataModelType: MultipleCumulativeMetricDataModel,
                 dataModelOptions: {
@@ -465,11 +547,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Memory'
+                group: 'Memory',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.interface.packets',
                 title: 'Network Packets',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MultipleCumulativeMetricDataModel,
                 dataModelOptions: {
@@ -484,11 +570,15 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'network.tcp.retrans',
                 title: 'Network Retransmits',
-                directive: 'line-integer-force-y-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MultipleCumulativeMetricDataModel,
                 dataModelOptions: {
@@ -507,11 +597,16 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Network'
+                group: 'Network',
+                attrs: {
+                    forcey: 10,
+                    percentage: false,
+                    integer: true
+                }
             }, {
                 name: 'disk.dev.latency',
                 title: 'Disk Latency',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: DiskLatencyMetricDataModel,
                 dataModelOptions: {
@@ -522,7 +617,11 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'Disk'
+                group: 'Disk',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
             }
         ];
 
