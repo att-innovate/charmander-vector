@@ -41,7 +41,7 @@
             {
                 name: 'att.cpu.utilization',
                 title: 'CPU Utilization',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: CPUstatMetricTimeSeriesDataModel,
                 dataModelOptions: {
@@ -57,7 +57,7 @@
             {
                 name: 'att.memory.utilization',
                 title: 'Memory Usage',
-                directive: 'line-integer-time-series',
+                directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: MemoryBytesMetricTimeSeriesDataModel,
                 dataModelOptions: {
