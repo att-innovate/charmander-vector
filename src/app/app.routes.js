@@ -45,6 +45,9 @@
                     return emptyWidgets;
                 }
             }
+        }).when('/app/dashboard/widget-settings-template2.html', {
+            templateUrl: 'app/dashboard/widget-settings-template2.html',
+            controller: 'WidgetSettingsCtrl2'
         })
         .otherwise('/');
     }

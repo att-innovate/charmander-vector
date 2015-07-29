@@ -86,7 +86,7 @@
             hideToolbar: true,
             widgetButtons: false,
             hideWidgetName: true,
-            hideWidgetSettings: true,
+            hideWidgetSettings: false,
             widgetDefinitions: widgetDefinitions,
             defaultWidgets: widgets
         };
@@ -116,4 +116,5 @@
     angular
         .module('app.controllers', [])
         .controller('DashboardController', DashboardCtrl);
+
 })();

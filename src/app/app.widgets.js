@@ -37,22 +37,37 @@
                                DiskLatencyMetricDataModel,
                                CumulativeUtilizationMetricDataModel,
                                vectorConfig) {
+        var onSettingsClose = function(resultFromModal, widgetModel, dashboardScope) {
+            if (typeof resultFromModal !== 'undefined'){
+                widgetModel.filter = resultFromModal.filter;    
+            }    
+        };
+
         var definitions = [
             {
                 name: 'att.cpu.utilization',
                 title: 'CPU Utilization',
                 directive: 'line-time-series',
+                filter:'',
                 dataAttrName: 'data',
                 dataModelType: CPUstatMetricTimeSeriesDataModel,
                 dataModelOptions: {
-                    name: 'cgroup.cpuacct.stat.user'
+                    name: 'cgroup.cpuacct.stat.user',
                 },
                 size: {
                     width: '25%',
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'ATT'
+                group: 'ATT',
+                settingsModalOptions: {
+                    templateUrl: 'app/dashboard/widget-settings-template2.html',
+                    controller: 'WidgetSettingsCtrl2'
+                },
+                onSettingsClose: onSettingsClose,
+                onSettingsDismiss: function(reasonForDismissal, dashboardScope) {
+                    // probably do nothing here, since the user pressed cancel
+                }
             },
             {
                 name: 'att.memory.utilization',
@@ -438,6 +453,7 @@
                 title: 'Network Throughput (kB)',
                 directive: 'line-time-series',
                 dataAttrName: 'data',
+                filter:'',
                 dataModelType: NetworkBytesMetricDataModel,
                 dataModelOptions: {
                     name: 'network.interface.bytes'
@@ -451,7 +467,12 @@
                 attrs: {
                     percentage: false,
                     integer: true
-                }
+                },
+                settingsModalOptions: {
+                    templateUrl: 'app/dashboard/widget-settings-template2.html',
+                    controller: 'WidgetSettingsCtrl2'
+                },
+                onSettingsClose: onSettingsClose
             }, {
                 name: 'disk.iops',
                 title: 'Disk IOPS',
