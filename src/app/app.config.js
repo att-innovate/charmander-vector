@@ -28,5 +28,8 @@
             'window': 2,    // Default graph time window in minutes
             'enableCpuFlameGraph': false,
             'enableDiskLatencyHeatMap': false
+        })
+        .constant('containerConfig', {
+            'functionName': 'containerResolver',//make sure function name is the same as filename
         });
 })();

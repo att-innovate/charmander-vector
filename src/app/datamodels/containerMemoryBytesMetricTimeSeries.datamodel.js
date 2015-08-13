@@ -6,10 +6,10 @@
      'use strict';
 
     /**
-    * @name MemoryBytesMetricTimeSeriesDataModel
+    * @name containerMemoryBytesMetricTimeSeriesDataModel
     * @desc
     */
-    function MemoryBytesMetricTimeSeriesDataModel(IdService, $rootScope, WidgetDataModel, MetricListService, VectorService) {
+    function containerMemoryBytesMetricTimeSeriesDataModel(ContainerMetadataService, $rootScope, WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -24,8 +24,7 @@
             // create create base metrics
             var inMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.memory.usage'),
                 //outMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.out.bytes'),
-                derivedFunction,
-                idDictionary = {};
+                derivedFunction;
 
             // create derived function
             derivedFunction = function () {
@@ -34,18 +33,11 @@
 
                 angular.forEach(inMetric.data, function (instance) {
                     if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
-                        
-                        IdService.getId(instance.key.split('/')[2])
-                            .success(function(data){
-                                idDictionary[instance.key.split('/')[2]] = data;
-                            }).error(function(){
-                                idDictionary[instance.key.split('/')[2]] = instance.key;
-                        });
 
+                        ContainerMetadataService.resolveId(instance.key);
                         lastValue = instance.values[instance.values.length - 1];
                         
-                        var name = idDictionary[instance.key.split('/')[2]];
-
+                        var name = ContainerMetadataService.idDictionary(instance.key) || instance.key;
                         returnValues.push({
                             timestamp: lastValue.x,
                             key: name,
@@ -53,8 +45,7 @@
                         });
                     }
                 });
-
-
+                
                 return returnValues;
             };
 
@@ -79,5 +70,5 @@
 
     angular
         .module('app.datamodels')
-        .factory('MemoryBytesMetricTimeSeriesDataModel', MemoryBytesMetricTimeSeriesDataModel);
+        .factory('containerMemoryBytesMetricTimeSeriesDataModel', containerMemoryBytesMetricTimeSeriesDataModel);
  })();

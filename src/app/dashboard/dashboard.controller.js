@@ -99,6 +99,7 @@
         vm.updateWindow = DashboardService.updateWindow;
         vm.isHostnameExpanded = false;
         vm.inputHost = '';
+        vm.globalFilter ='';
         activate();
     }
 

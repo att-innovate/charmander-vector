@@ -5,10 +5,10 @@
      'use strict';
 
     /**
-    * @name CPUstatMetricTimeSeriesDataModel
+    * @name containerCPUstatMetricTimeSeriesDataModel
     * @desc
     */
-    function CPUstatMetricTimeSeriesDataModel(IdService, WidgetDataModel, MetricListService, VectorService) {
+    function containerCPUstatMetricTimeSeriesDataModel(ContainerMetadataService, WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -24,8 +24,7 @@
             // create create base metrics
             var cpuSysMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.cpuacct.stat.user'),
                 cpuUserMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.cpuacct.stat.system'),
-                derivedFunction,
-                idDictionary = {};
+                derivedFunction;
 
             derivedFunction = function () {
                 var returnValues = [],
@@ -36,35 +35,25 @@
                     angular.forEach(cpuSysMetric.data, function (instance) {
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             lastValue2.push(instance.previousValue);
-                            IdService.getId(instance.key.split('/')[2])
-                                .success(function(data){
 
-                                    if (data.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
-                                        idDictionary[instance.key.split('/')[2]] = data;    
-                                    }
-                                })
-                                .error(function(){
-                                    idDictionary[instance.key.split('/')[2]] = instance.key;
-                            });
+                            ContainerMetadataService.resolveId(instance.key);
                         }
                     });
 
                     angular.forEach(cpuUserMetric.data, function (instance) {
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             var lastValue = instance.values[instance.values.length - 1];
-                            
-                            var name = idDictionary[instance.key.split('/')[2]] || instance.key;
-                            if (name.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
-                            returnValues.push({
-                                timestamp: lastValue.x,
-                                key: name,
-                                value: instance.previousValue / lastValue2.shift()
-                            });
+                            var name = ContainerMetadataService.idDictionary(instance.key) || instance.key;
 
+                            if (name.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
+                                returnValues.push({
+                                    timestamp: lastValue.x,
+                                    key: name,
+                                    value: instance.previousValue / lastValue2.shift()
+                                });
                             }
                         }
                     });
-                    
                 }
 
                 return returnValues;
@@ -92,5 +81,5 @@
 
     angular
         .module('app.datamodels')
-        .factory('CPUstatMetricTimeSeriesDataModel', CPUstatMetricTimeSeriesDataModel);
+        .factory('containerCPUstatMetricTimeSeriesDataModel', containerCPUstatMetricTimeSeriesDataModel);
  })();

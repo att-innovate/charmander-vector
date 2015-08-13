@@ -25,8 +25,8 @@
     /* Widgets */
     function widgetDefinitions(MetricDataModel,
                                CumulativeMetricDataModel,
-                               CPUstatMetricTimeSeriesDataModel,
-                               MemoryBytesMetricTimeSeriesDataModel,
+                               containerCPUstatMetricTimeSeriesDataModel,
+                               containerMemoryBytesMetricTimeSeriesDataModel,
                                MemoryUtilizationMetricDataModel,
                                NetworkBytesMetricDataModel,
                                CpuUtilizationMetricDataModel,
@@ -37,7 +37,8 @@
                                DiskLatencyMetricDataModel,
                                CumulativeUtilizationMetricDataModel,
                                vectorConfig) {
-        var onSettingsClose = function(resultFromModal, widgetModel, dashboardScope) {
+
+        var onSettingsClose = function(resultFromModal, widgetModel) {
             if (typeof resultFromModal !== 'undefined'){
                 widgetModel.filter = resultFromModal.filter;    
             }    
@@ -50,7 +51,7 @@
                 directive: 'line-time-series',
                 filter:'',
                 dataAttrName: 'data',
-                dataModelType: CPUstatMetricTimeSeriesDataModel,
+                dataModelType: containerCPUstatMetricTimeSeriesDataModel,
                 dataModelOptions: {
                     name: 'cgroup.cpuacct.stat.user',
                 },
@@ -61,20 +62,17 @@
                 enableVerticalResize: false,
                 group: 'ATT',
                 settingsModalOptions: {
-                    templateUrl: 'app/dashboard/widget-settings-template2.html',
-                    controller: 'WidgetSettingsCtrl2'
+                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
+                    controller: 'customWidgetSettingsCtrl'
                 },
-                onSettingsClose: onSettingsClose,
-                onSettingsDismiss: function(reasonForDismissal, dashboardScope) {
-                    // probably do nothing here, since the user pressed cancel
-                }
+                onSettingsClose: onSettingsClose
             },
             {
                 name: 'att.memory.utilization',
                 title: 'Memory Usage',
                 directive: 'line-time-series',
                 dataAttrName: 'data',
-                dataModelType: MemoryBytesMetricTimeSeriesDataModel,
+                dataModelType: containerMemoryBytesMetricTimeSeriesDataModel,
                 dataModelOptions: {
                     name: 'cgroup.memory.usage'
                 },
@@ -469,8 +467,8 @@
                     integer: true
                 },
                 settingsModalOptions: {
-                    templateUrl: 'app/dashboard/widget-settings-template2.html',
-                    controller: 'WidgetSettingsCtrl2'
+                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
+                    controller: 'customWidgetSettingsCtrl'
                 },
                 onSettingsClose: onSettingsClose
             }, {

@@ -68,6 +68,16 @@
         <p class="lead" id="hostnameLabel" data-content="PMCD hostname. The hostname from the actual instance you're monitoring." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body">{{flags.contextAvailable && properties.hostname ? properties.hostname : 'Disconnected'}}</p>
     </div>
 </div>
+<div class="row" ng-show="vm.isHostnameExpanded">
+    <div class="col-md-6">
+        <form role="form" name="form">
+            <div class="input-group input-group-lg" ng-class="{'has-error': form.hostspec.$invalid && form.hostspec.$dirty}">
+                <span class="input-group-addon">Filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <input type="text" class="form-control" id="hostspecInput" name="host" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.globalFilter" delay="1000" ng-disabled="flags.contextUpdating == true" required placeholder="Filter">
+            </div>
+        </form>
+    </div>
+</div>
 <div id="alert-dashboard-error" flash-alert="error" active-class="in alert" class="fade">
     <strong class="alert-heading">Error!</strong>
     <span class="alert-message">{{flash.message}}</span>
