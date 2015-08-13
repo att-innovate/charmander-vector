@@ -6,7 +6,7 @@
      /**
      * @name ContainerMetadataService
      */
-     function ContainerMetadataService($http, $rootScope, $q, containerConfig) {
+     function ContainerMetadataService($http, $rootScope, $q, containerConfig, $window) {
 
         /**
         * @name idDictionary
@@ -38,9 +38,9 @@
 
         function resolveId(instanceKey) {
             
-            if ( typeof window[containerConfig.functionName] === 'function' ){
+            if ( typeof $window[containerConfig.functionName] === 'function' ){
                 var dockerId = instanceKey.split('/')[2];
-                window[containerConfig.functionName](dockerId).then(function(response){
+                $window[containerConfig.functionName](dockerId).then(function(response){
                     idDictionary(dockerId,response);
                 });
             } else {
