@@ -71,9 +71,10 @@
 <div class="row" ng-show="vm.isHostnameExpanded">
     <div class="col-md-6">
         <form role="form" name="form">
-            <div class="input-group input-group-lg" ng-class="{'has-error': form.hostspec.$invalid && form.hostspec.$dirty}">
+            <div class="input-group input-group-lg">
                 <span class="input-group-addon">Filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control" id="hostspecInput" name="host" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.globalFilter" delay="1000" ng-disabled="flags.contextUpdating == true" required placeholder="Filter">
+                <input type="text" class="form-control" id="hostspecInput" name="host" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.globalFilter" ng-change="vm.updateFilter()" delay="1000" ng-disabled="flags.contextUpdating == true"  placeholder="Filter">
+                <i class="fa fa-cog fa-spin form-control-feedback" ng-if="flags.filterDone"></i>
             </div>
         </form>
     </div>

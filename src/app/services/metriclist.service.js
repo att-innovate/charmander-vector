@@ -206,14 +206,46 @@
                             angular.forEach(value.instances, function (instance) {
                                 var iid = angular.isUndefined(instance.instance) ? 1 : instance.instance;
                                 var iname = metrics.inames[name].inames[iid];
-
                                 var metricInstance = _.find(simpleMetrics, function (el) {
                                     return el.name === name;
                                 });
+
+
                                 if (angular.isDefined(metricInstance) && metricInstance !== null) {
+
+
                                     metricInstance.pushValue(metrics.timestamp, iid, iname, instance.value);
+
+                                    if (metricInstance.name.indexOf("cgroup.cpuacct.stat.system")!==-1){
+                                        //console.log('metricInstance:',metricInstance.data.length);
+                                        //console.log('metrics:',metrics.values[1].instances.length);
+
+                                        if (metrics.values[1].instances.length < metricInstance.data.length){
+                                            console.log('metricInstance:',metricInstance.data);
+                                            console.log('metrics:',metrics.values[1].instances);
+                                            var map={};
+                                            for(var a=0; a< metrics.values[1].instances.length; a++){
+                                                map[metrics.values[1].instances[a].instance]=true;
+                                            }
+                                            for(var a=0; a< metricInstance.data.length; a++){
+                                                if ( map[metricInstance.data[a].iid] !== true ){
+                                                    console.log(metricInstance.data[a].iid);
+                                                    //delete metricInstance.data[a];
+                                                    metricInstance.data.splice( a, 1 );
+    
+                                                }
+                                            }
+
+
+                                        }
+
+                                    }
+                                    
                                 }
                             });
+
+                        
+
                         });
                     }).then(
                         function () { callback(true); },

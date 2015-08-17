@@ -96,6 +96,11 @@
         vm.updateHost = function() {
             DashboardService.updateHost(vm.inputHost);
         };
+
+        vm.updateFilter = function() {
+            DashboardService.updateFilter(vm.globalFilter);
+
+        };
         vm.updateWindow = DashboardService.updateWindow;
         vm.isHostnameExpanded = false;
         vm.inputHost = '';

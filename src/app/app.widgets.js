@@ -40,7 +40,7 @@
 
         var onSettingsClose = function(resultFromModal, widgetModel) {
             if (typeof resultFromModal !== 'undefined'){
-                widgetModel.filter = resultFromModal.filter;    
+                widgetModel.filter = resultFromModal.filter; 
             }    
         };
 
@@ -49,7 +49,6 @@
                 name: 'att.cpu.utilization',
                 title: 'CPU Utilization',
                 directive: 'line-time-series',
-                filter:'',
                 dataAttrName: 'data',
                 dataModelType: containerCPUstatMetricTimeSeriesDataModel,
                 dataModelOptions: {
@@ -65,7 +64,8 @@
                     templateUrl: 'app/dashboard/custom-widget-settings-template.html',
                     controller: 'customWidgetSettingsCtrl'
                 },
-                onSettingsClose: onSettingsClose
+                onSettingsClose: onSettingsClose,
+                filter:''
             },
             {
                 name: 'att.memory.utilization',
@@ -81,7 +81,8 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'ATT'
+                group: 'ATT',
+                filter:''
             },
             {
                 name: 'kernel.all.load',

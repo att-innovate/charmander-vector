@@ -22,7 +22,7 @@
      * @name DashboardService
      * @desc
      */
-     function DashboardService($rootScope, $http, $interval, $log, $location, PMAPIService, MetricListService, flash, vectorConfig) {
+     function DashboardService($rootScope, $http, $interval, $timeout, $log, $location, PMAPIService, MetricListService, flash, vectorConfig, ContainerMetadataService) {
         var loopErrors = 0;
         var intervalPromise;
 
@@ -88,6 +88,7 @@
         function updateHostnameSuccessCallback(data) {
           $rootScope.properties.hostname = data.values[0].instances[0].value;
           $log.info('Hostname updated: ' + $rootScope.properties.hostname);
+          ContainerMetadataService.clearIdDictionary();
         }
 
         /**
@@ -147,6 +148,7 @@
                         PMAPIService.getMetrics(data, ['pmcd.hostname'])
                             .then(function (metrics) {
                                 updateHostnameSuccessCallback(metrics);
+                                
                             }, function errorHandler() {
                                 updateHostnameErrorCallback();
                             });
@@ -176,6 +178,27 @@
             MetricListService.clearDerivedMetricList();
 
             updateContext(host);
+        }
+
+        /**
+        * @name updateFilter
+        * @desc
+        */
+        function updateFilter(word) {
+            $log.info('Filter updated.');
+
+            $rootScope.flags.filterDone = true;
+            ContainerMetadataService.setGlobalFilter(word);
+            
+            $timeout(updateFilterCallback, 1800 * $rootScope.properties.interval);
+        }
+
+        /**
+        * @name updateFilterCallback
+        * @desc
+        */
+        function updateFilterCallback(){
+            $rootScope.flags.filterDone = false;
         }
 
         /**
@@ -242,6 +265,7 @@
             cancelInterval: cancelInterval,
             updateInterval: updateInterval,
             updateHost: updateHost,
+            updateFilter: updateFilter,
             updateWindow: updateWindow,
             initializeProperties: initializeProperties
         };

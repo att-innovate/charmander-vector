@@ -31,11 +31,9 @@
                     lastValue2 = [];
 
                 if ( cpuSysMetric.data.length > 0 && cpuUserMetric.data.length > 0){
-
                     angular.forEach(cpuSysMetric.data, function (instance) {
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             lastValue2.push(instance.previousValue);
-
                             ContainerMetadataService.resolveId(instance.key);
                         }
                     });
@@ -44,8 +42,8 @@
                         if (instance.values.length > 0 && instance.key.indexOf('docker/')!== -1) {
                             var lastValue = instance.values[instance.values.length - 1];
                             var name = ContainerMetadataService.idDictionary(instance.key) || instance.key;
-
-                            if (name.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
+                            var filter = ContainerMetadataService.getGlobalFilter();
+                            if ((filter === '' || name.indexOf(filter) !==-1) && (name.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1)) {
                                 returnValues.push({
                                     timestamp: lastValue.x,
                                     key: name,

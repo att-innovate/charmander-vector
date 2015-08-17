@@ -20,11 +20,13 @@
             WidgetDataModel.prototype.init.call(this);
 
             this.name = this.dataModelOptions ? this.dataModelOptions.name : 'metric_' + VectorService.getGuid();
+            var widgetDefinition = this;
 
             // create create base metrics
             var inMetric = MetricListService.getOrCreateCumulativeMetric('cgroup.memory.usage'),
                 //outMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.out.bytes'),
                 derivedFunction;
+
 
             // create derived function
             derivedFunction = function () {
@@ -38,11 +40,14 @@
                         lastValue = instance.values[instance.values.length - 1];
                         
                         var name = ContainerMetadataService.idDictionary(instance.key) || instance.key;
-                        returnValues.push({
-                            timestamp: lastValue.x,
-                            key: name,
-                            value: instance.previousValue / 1024 / 1024
-                        });
+                        var filter = ContainerMetadataService.getGlobalFilter();
+                        if ((filter === '' || name.indexOf(filter) !==-1) && (name.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1)) {
+                            returnValues.push({
+                                timestamp: lastValue.x,
+                                key: name,
+                                value: instance.previousValue / 1024 / 1024
+                            });
+                        }
                     }
                 });
                 
