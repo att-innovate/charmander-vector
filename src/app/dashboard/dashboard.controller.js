@@ -28,7 +28,7 @@
     * @name DashboardCtrl
     * @desc Main dashboard Controller
     */
-    function DashboardCtrl($document, $rootScope, $log, $route, $routeParams, widgetDefinitions, widgets, DashboardService) {
+    function DashboardCtrl($document, $rootScope, $log, $route, $routeParams, $location, $timeout, widgetDefinitions, widgets, DashboardService) {
         var vm = this;
         var path = $route.current.$$route.originalPath;
 
@@ -65,8 +65,11 @@
                     $rootScope.properties.hostspec = $routeParams.hostspec;
                     $log.info('Hostspec: ' + $routeParams.hostspec);
                 }
-                $rootScope.properties.scenario = $routeParams.scenario; //sets the scenario parameters
+
+                $rootScope.properties.widgets = $routeParams.widgets; //sets the scenario parameters
+
                 DashboardService.updateHost(vm.inputHost);
+
             }
 
             // hack to deal with window/tab out of focus
@@ -82,24 +85,100 @@
             $log.info('Dashboard controller initialized with ' + path + ' view.');
         }
 
-         vm.dashboardOptions = {
+        var widgetsToLoad = widgets;
+
+        if ($routeParams.widgets !== undefined ){
+            var indexArr = $routeParams.widgets.split(','); 
+            var arr = [];
+
+            for(var a =0; a< indexArr.length; a++){
+                arr.push(widgetDefinitions[indexArr[a]]);
+            }
+            widgetsToLoad = arr;
+
+        }
+
+        vm.dashboardOptions = {
             hideToolbar: true,
             widgetButtons: false,
             hideWidgetName: true,
             hideWidgetSettings: false,
             widgetDefinitions: widgetDefinitions,
-            defaultWidgets: widgets
+            defaultWidgets: widgetsToLoad
         };
+        if ($routeParams.widgets === undefined){
+            var urlArr=[];
+
+            for(var b=0; b< widgets.length;b++){
+                for(var c=0; c< widgetDefinitions.length;c++){
+                    if (widgetDefinitions[c].name === widgets[b].name){
+                        urlArr.push(c); 
+                    }
+                }
+            }
+            $location.search('widgets', urlArr.toString());
+        }else{
+            //check for invalid character
+            if ($routeParams.widgets){
+
+                var arr1 = $routeParams.widgets.split(',');
+                for(var z =0; z< arr1.length;z++){
+                    var zz = arr1[z];
+                    if ( ! /^\d+$/.test(zz) ) {
+                        $location.search('widgets', null); 
+                        break;
+                     }
+                 }
+            }
+        }
+
+        //refactor widget mapping into service
+        vm.widgetMapping={};
+        for (var f=0; f< widgetDefinitions.length; f++){
+            vm.widgetMapping[widgetDefinitions[f].name]=f;
+        }
 
         // Export controller public functions
         vm.updateInterval = DashboardService.updateInterval;
         vm.updateHost = function() {
             DashboardService.updateHost(vm.inputHost);
         };
-
         vm.updateFilter = function() {
             DashboardService.updateFilter(vm.globalFilter);
-
+        };
+        vm.addWidgetToURL = function(widgetObj){
+            var newUrl ='';
+            if ($routeParams.widgets === undefined) {
+                $routeParams.widgets = '';
+            } else {
+                newUrl = ',';
+            }
+            newUrl = newUrl + widgetDefinitions.indexOf(widgetObj);
+            $location.search('widgets', $routeParams.widgets + newUrl);
+        };
+        vm.removeWidgetFromURL = function(widgetObj){
+            var indexArr = $routeParams.widgets.split(',');
+            for (var d=0; d< indexArr.length; d++){
+                if (indexArr[d] == vm.widgetMapping[widgetObj.name]){
+                    indexArr.splice(d,1);
+                    break;
+                }
+            }
+            if (indexArr.length < 1){
+                $location.search('widgets', null);
+            } else {
+               $location.search('widgets', indexArr.toString()); 
+            }
+            
+        };
+        vm.removeAllWidgetFromURL = function(){
+            $location.search('widgets', null);
+        };
+        vm.updateFilterWidget = function(widgetModel, modalInput) {
+            widgetModel.filter=modalInput.result;
+        };
+        vm.clearFilterWidget = function(widgetModel) {
+            widgetModel.filter='';
         };
         vm.updateWindow = DashboardService.updateWindow;
         vm.isHostnameExpanded = false;
@@ -114,6 +193,8 @@
         '$log',
         '$route',
         '$routeParams',
+        '$location',
+        '$timeout',
         'widgetDefinitions',
         'widgets',
         'DashboardService'

@@ -115,6 +115,11 @@
      margin-top: 7px;
  }
 
+.widgetInput{
+    margin-left: -1px !important;
+    margin-top: 0px !important;
+}
+
  #welcomeScreen #hostnameInput{
      margin-top: 8px;
  }
