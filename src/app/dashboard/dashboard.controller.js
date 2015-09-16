@@ -99,15 +99,30 @@
         });
 
         if ($routeParams.widgets !== undefined ){
-            var indexArr = $routeParams.widgets.split(','); 
+            var widgetNameArr = $routeParams.widgets.split(','); 
             var arr = [];
-
-            for(var a =0; a< indexArr.length; a++){
-                arr.push(widgetDefinitions[indexArr[a]]);
+            for(var a =0; a< widgetNameArr.length; a++){
+                var widgetNames = widgetDefinitions.filter(function(w){
+                    return w.name===widgetNameArr[a];
+                });
+                if (widgetNames.length > 0){
+                    arr.push(widgetNames[0]);
+                }
             }
             widgetsToLoad = arr;
         } else {
-            //widgetsToLoad = vm.loadConfig()[0].activeWidgets;
+            var urlArr=[];
+            for(var b=0; b< widgets.length;b++){
+                var widgetNames = widgetDefinitions.filter(function(w){
+                    return w.name === widgets[b].name;
+                });
+                urlArr.push(widgetNames[0]);
+            }
+
+            var widgetsURL = urlArr.reduce(function(total,name){
+                return total+name.name+",";
+            },"");
+            $location.search('widgets', widgetsURL.substring(0,widgetsURL.length-1));
         }
 
         vm.dashboardOptions = {
@@ -118,39 +133,6 @@
             widgetDefinitions: widgetDefinitions,
             defaultWidgets: widgetsToLoad
         };
-
-
-        if ($routeParams.widgets === undefined){
-            var urlArr=[];
-
-            for(var b=0; b< widgets.length;b++){
-                for(var c=0; c< widgetDefinitions.length;c++){
-                    if (widgetDefinitions[c].name === widgets[b].name){
-                        urlArr.push(c); 
-                    }
-                }
-            }
-            $location.search('widgets', urlArr.toString());
-        }else{
-            //check for invalid character
-            if ($routeParams.widgets){
-
-                var arr1 = $routeParams.widgets.split(',');
-                for(var z =0; z< arr1.length;z++){
-                    var zz = arr1[z];
-                    if ( ! /^\d+$/.test(zz) ) {
-                        $location.search('widgets', null); 
-                        break;
-                     }
-                 }
-            }
-        }
-
-        //refactor widget mapping into service
-        vm.widgetMapping={};
-        for (var f=0; f< widgetDefinitions.length; f++){
-            vm.widgetMapping[widgetDefinitions[f].name]=f;
-        }
 
         // Export controller public functions
         vm.updateInterval = DashboardService.updateInterval;
@@ -167,24 +149,24 @@
             } else {
                 newUrl = ',';
             }
-            var widgetUrl = widgetDefinitions.indexOf(widgetObj);
-            if (widgetUrl !== -1){
-                newUrl = newUrl + widgetUrl;
-                $location.search('widgets', $routeParams.widgets + newUrl);
-            }
+
+            newUrl = newUrl + widgetObj.name;
+            $location.search('widgets', $routeParams.widgets + newUrl);
+            
         };
         vm.removeWidgetFromURL = function(widgetObj){
-            var indexArr = $routeParams.widgets.split(',');
-            for (var d=0; d< indexArr.length; d++){
-                if (indexArr[d] === vm.widgetMapping[widgetObj.name]){
-                    indexArr.splice(d,1);
+            var widgetNameArr = $routeParams.widgets.split(',');
+            for (var d=0; d< widgetNameArr.length; d++){
+                if (widgetNameArr[d] === widgetObj.name){
+                    widgetNameArr.splice(d,1);
                     break;
                 }
             }
-            if (indexArr.length < 1){
+
+            if (widgetNameArr.length < 1){
                 $location.search('widgets', null);
             } else {
-               $location.search('widgets', indexArr.toString()); 
+                $location.search('widgets', widgetNameArr.toString()); 
             }
             
         };
