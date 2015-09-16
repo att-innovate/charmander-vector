@@ -31,5 +31,12 @@
         })
         .constant('containerConfig', {
             'functionName': 'containerResolver',//make sure function name is the same as filename
+        })
+        .constant('configFunctions', {
+            'save': 'configSave',//make sure function name is the same as filename
+            'delete': 'configDelete',
+            'check': 'configCheck',
+            'update': 'configUpdate',
+            'load': 'configLoad',
         });
 })();

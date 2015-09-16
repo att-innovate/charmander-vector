@@ -28,7 +28,7 @@
     * @name DashboardCtrl
     * @desc Main dashboard Controller
     */
-    function DashboardCtrl($document, $rootScope, $log, $route, $routeParams, $location, $timeout, widgetDefinitions, widgets, DashboardService) {
+    function DashboardCtrl($document, $rootScope, $log, $route, $routeParams, $location, $timeout, $q, widgetDefinitions, widgets, DashboardService, ConfigService) {
         var vm = this;
         var path = $route.current.$$route.originalPath;
 
@@ -66,7 +66,7 @@
                     $log.info('Hostspec: ' + $routeParams.hostspec);
                 }
 
-                $rootScope.properties.widgets = $routeParams.widgets; //sets the scenario parameters
+                $rootScope.properties.widgets = $routeParams.widgets;
 
                 DashboardService.updateHost(vm.inputHost);
 
@@ -83,9 +83,20 @@
                 .addEventListener('mozvisibilitychange', visibilityChanged, false);
 
             $log.info('Dashboard controller initialized with ' + path + ' view.');
+        
         }
 
         var widgetsToLoad = widgets;
+
+        vm.loadConfig = function() {
+            return ConfigService.loadConfig();
+        };
+
+        vm.loadConfig()
+        .then(function(val){
+            widgetsToLoad = val;
+            vm.configs = val || [];
+        });
 
         if ($routeParams.widgets !== undefined ){
             var indexArr = $routeParams.widgets.split(','); 
@@ -95,7 +106,8 @@
                 arr.push(widgetDefinitions[indexArr[a]]);
             }
             widgetsToLoad = arr;
-
+        } else {
+            //widgetsToLoad = vm.loadConfig()[0].activeWidgets;
         }
 
         vm.dashboardOptions = {
@@ -106,6 +118,8 @@
             widgetDefinitions: widgetDefinitions,
             defaultWidgets: widgetsToLoad
         };
+
+
         if ($routeParams.widgets === undefined){
             var urlArr=[];
 
@@ -153,13 +167,16 @@
             } else {
                 newUrl = ',';
             }
-            newUrl = newUrl + widgetDefinitions.indexOf(widgetObj);
-            $location.search('widgets', $routeParams.widgets + newUrl);
+            var widgetUrl = widgetDefinitions.indexOf(widgetObj);
+            if (widgetUrl !== -1){
+                newUrl = newUrl + widgetUrl;
+                $location.search('widgets', $routeParams.widgets + newUrl);
+            }
         };
         vm.removeWidgetFromURL = function(widgetObj){
             var indexArr = $routeParams.widgets.split(',');
             for (var d=0; d< indexArr.length; d++){
-                if (indexArr[d] == vm.widgetMapping[widgetObj.name]){
+                if (indexArr[d] === vm.widgetMapping[widgetObj.name]){
                     indexArr.splice(d,1);
                     break;
                 }
@@ -175,16 +192,63 @@
             $location.search('widgets', null);
         };
         vm.updateFilterWidget = function(widgetModel, modalInput) {
-            widgetModel.filter=modalInput.result;
+            widgetModel.filter = modalInput.result;
         };
         vm.clearFilterWidget = function(widgetModel) {
-            widgetModel.filter='';
+            widgetModel.filter = '';
+        };
+        vm.saveConfig = function(configName, activeWidgets) {
+            //var foo = localStorage.getItem("bar");
+
+            ConfigService.saveConfig(configName, activeWidgets).then(function(){
+                vm.loadConfig().then(function(val){
+                    vm.configs = val;
+                    vm.currentConfig={};
+                });
+            });
+
+
+        };
+        vm.deleteConfig = function(configName) {
+            console.log('deleting:',configName);
+            ConfigService.deleteConfig(configName).then(function(){
+                vm.loadConfig().then(function(val){
+                    vm.configs = val;
+                    vm.currentConfig={};
+                });
+            });
+
+        };
+        vm.renderConfig = function(config){
+            console.log('inside renderConfig:',config);
+            vm.currentConfig.name = config.name;
+            vm.currentConfig.host = config.host;
+            vm.currentConfig.hostspec = config.hostspec;
+            vm.currentConfig.globalFilter = config.globalFilter;
+            vm.currentConfig.activeWidgets = config.activeWidgets;
+            vm.load = true;
+        };
+        vm.closeConfig = function(){
+            vm.currentConfig.name = '';
+            //set property on input box;
+            console.log('vm.load:',vm.load);
+            console.log('currentConfig.activeWidgets:',vm.currentConfig.activeWidgets);
+            if (vm.load){
+                for(var a=0;a<vm.currentConfig.activeWidgets.length;a++){
+                    vm.addWidgetToURL(vm.currentConfig.activeWidgets[a]);
+                }
+                vm.load = false;
+            }
         };
         vm.updateWindow = DashboardService.updateWindow;
         vm.isHostnameExpanded = false;
         vm.inputHost = '';
         vm.globalFilter ='';
+        vm.configs = [];
+        vm.currentConfig={};
+        vm.load = false;
         activate();
+
     }
 
     DashboardCtrl.$inject = [
@@ -195,9 +259,11 @@
         '$routeParams',
         '$location',
         '$timeout',
+        '$q',
         'widgetDefinitions',
         'widgets',
-        'DashboardService'
+        'DashboardService',
+        'ConfigService'
     ];
 
     angular

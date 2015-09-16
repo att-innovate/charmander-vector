@@ -85,6 +85,8 @@
     margin-top: 18px;
  }
 
+
+
  .alert,
  .btn {
      background-image: none !important;
@@ -226,6 +228,34 @@
     -webkit-border-radius:6px 0 6px 6px;
     -moz-border-radius:6px 0 6px 6px;
     border-radius:6px 0 6px 6px;
+}
+
+#setting-modal-label {
+    width: 142px;
+    float: left;
+    height: 46px;
+    border-right: 1px solid #ccc;
+    border-top-right-radius: 5px ;
+    border-bottom-right-radius: 5px ;
+    text-align: inherit; 
+}
+
+.setting-modal-button{
+    margin-top: 0px;
+}
+
+.setting-modal-spacer{
+    margin-left: 11px;
+}
+
+.setting-modal-input {
+    margin: 0 !important;
+}
+
+.setting-modal-config-dropdown {
+    margin: 0;
+    width: 143px;
+    margin-top: -3px;
 }
 
 @media screen and (max-width: 1280px) {
