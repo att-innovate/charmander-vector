@@ -99,7 +99,7 @@
         });
 
         if ($routeParams.widgets !== undefined ){
-            var widgetNameArr = $routeParams.widgets.split(','); 
+            var widgetNameArr = $routeParams.widgets.split(',') || [];
             var arr = [];
             for(var a =0; a< widgetNameArr.length; a++){
                 var widgetNames = widgetDefinitions.filter(function(w){
@@ -110,6 +110,7 @@
                 }
             }
             widgetsToLoad = arr;
+
         } else {
             var urlArr=[];
             for(var b=0; b< widgets.length;b++){
@@ -120,8 +121,8 @@
             }
 
             var widgetsURL = urlArr.reduce(function(total,name){
-                return total+name.name+",";
-            },"");
+                return total+name.name+',';
+            },'');
             $location.search('widgets', widgetsURL.substring(0,widgetsURL.length-1));
         }
 
@@ -150,12 +151,21 @@
                 newUrl = ',';
             }
 
-            newUrl = newUrl + widgetObj.name;
+            if (widgetObj.length){
+                $routeParams.widgets = '';
+                var combinedUrl = widgetObj
+                .reduce(function(a,b){
+                    return a+b.name+',';
+                },'');
+                newUrl = combinedUrl.substring(0,combinedUrl.length-1);
+            } else {
+                newUrl = newUrl + widgetObj.name;
+            }
             $location.search('widgets', $routeParams.widgets + newUrl);
             
         };
         vm.removeWidgetFromURL = function(widgetObj){
-            var widgetNameArr = $routeParams.widgets.split(',');
+            var widgetNameArr = $routeParams.widgets.split(',') || [];
             for (var d=0; d< widgetNameArr.length; d++){
                 if (widgetNameArr[d] === widgetObj.name){
                     widgetNameArr.splice(d,1);
