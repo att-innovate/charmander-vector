@@ -103,7 +103,7 @@
             widgetsToLoad = widgetNameArr.reduce(function(all, name){
                 return all.concat(widgetDefinitions.filter(function(def){
                     return def.name === name;
-                }))
+                }));
             },[]);
         } else {
             var urlArr = widgets.reduce(function(all,item){
