@@ -100,30 +100,17 @@
 
         if ($routeParams.widgets !== undefined ){
             var widgetNameArr = $routeParams.widgets.split(',') || [];
-            var arr = [];
-            for(var a =0; a< widgetNameArr.length; a++){
-                var widgetNames = widgetDefinitions.filter(function(w){
-                    return w.name===widgetNameArr[a];
-                });
-                if (widgetNames.length > 0){
-                    arr.push(widgetNames[0]);
-                }
-            }
-            widgetsToLoad = arr;
-
+            widgetsToLoad = widgetNameArr.reduce(function(all, name){
+                return all.concat(widgetDefinitions.filter(function(def){
+                    return def.name === name;
+                }))
+            },[]);
         } else {
-            var urlArr=[];
-            for(var b=0; b< widgets.length;b++){
-                var widgetNames = widgetDefinitions.filter(function(w){
-                    return w.name === widgets[b].name;
-                });
-                urlArr.push(widgetNames[0]);
-            }
-
-            var widgetsURL = urlArr.reduce(function(total,name){
-                return total+name.name+',';
-            },'');
-            $location.search('widgets', widgetsURL.substring(0,widgetsURL.length-1));
+            var urlArr = widgets.reduce(function(all,item){
+                all.push(item.name);
+                return all;
+            },[]).join();
+            $location.search('widgets', urlArr);
         }
 
         vm.dashboardOptions = {
