@@ -140,16 +140,14 @@
 
             if (widgetObj.length){
                 $routeParams.widgets = '';
-                var combinedUrl = widgetObj
-                .reduce(function(a,b){
-                    return a+b.name+',';
-                },'');
-                newUrl = combinedUrl.substring(0,combinedUrl.length-1);
+                newUrl = widgetObj.reduce(function(all,item){
+                    all.push(item.name);
+                    return all;
+                },[]).join();
             } else {
                 newUrl = newUrl + widgetObj.name;
             }
-            $location.search('widgets', $routeParams.widgets + newUrl);
-            
+            $location.search('widgets', $routeParams.widgets + newUrl);            
         };
         vm.removeWidgetFromURL = function(widgetObj){
             var widgetNameArr = $routeParams.widgets.split(',') || [];
@@ -159,13 +157,11 @@
                     break;
                 }
             }
-
             if (widgetNameArr.length < 1){
                 $location.search('widgets', null);
             } else {
                 $location.search('widgets', widgetNameArr.toString()); 
             }
-            
         };
         vm.removeAllWidgetFromURL = function(){
             $location.search('widgets', null);
