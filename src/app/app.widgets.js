@@ -46,8 +46,8 @@
 
         var definitions = [
             {
-                name: 'att.cpu.utilization',
-                title: 'CPU Utilization',
+                name: 'cgroup.cpuacct.stat.user',
+                title: 'CPU Utilization (User)',
                 directive: 'line-time-series',
                 dataAttrName: 'data',
                 dataModelType: containerCPUstatMetricTimeSeriesDataModel,
@@ -59,16 +59,11 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'ATT',
-                settingsModalOptions: {
-                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
-                    controller: 'customWidgetSettingsCtrl'
-                },
+                group: 'Container',
                 onSettingsClose: onSettingsClose,
-                filter:''
             },
             {
-                name: 'att.memory.utilization',
+                name: 'cgroup.memory.usage',
                 title: 'Memory Usage',
                 directive: 'line-time-series',
                 dataAttrName: 'data',
@@ -81,8 +76,7 @@
                     height: '250px'
                 },
                 enableVerticalResize: false,
-                group: 'ATT',
-                filter:''
+                group: 'Container',
             },
             {
                 name: 'kernel.all.load',
@@ -680,12 +674,12 @@
 
     var defaultWidgets = [
         {
-            name: 'att.cpu.utilization',
+            name: 'cgroup.cpuacct.stat.user',
             size: {
                 width: '50%'
             }
         }, {
-            name: 'att.memory.utilization',
+            name: 'cgroup.memory.usage',
             size: {
                 width: '50%'
             }
