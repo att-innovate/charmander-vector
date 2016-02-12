@@ -1,9 +1,9 @@
-<div class="row">
+<div class="row" ng-if="!vm.embed">
     <div class="col-md-6">
         <form role="form" name="form">
             <div class="input-group input-group-lg" ng-class="{'has-error': form.host.$invalid && form.host.$dirty}">
-                <span class="input-group-addon" data-toggle="modal" data-target="#myModal" ng-click="vm.isHostnameExpanded = !vm.isHostnameExpanded">Hostname &nbsp; <i class="fa fa-plus-square-o"></i></span>
-                <input type="text" class="form-control" id="hostnameInput" name="host" data-content="Please enter the instance hostname. Port can be specified using the <hostname>:<port> format. Expand to change hostspec." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.inputHost" ng-change="vm.updateHost()" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" ng-disabled="flags.contextUpdating == true" required placeholder="Instance Hostname">
+                <span class="input-group-addon" ng-click="vm.isHostnameExpanded = !vm.isHostnameExpanded;">Hostname &nbsp; <i class="fa fa-plus-square-o"></i></span>
+                <input type="text" class="form-control" id="hostnameInput" name="host" data-content="Please enter the instance hostname. Port can be specified using the <hostname>:<port> format. Expand to change hostspec." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.inputHost" ng-change="vm.updateHost()" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" ng-disabled="flags.contextUpdating == true || vm.disableSelect" required placeholder="Instance Hostname">
                 <i class="fa fa-refresh fa-2x form-control-feedback" ng-if="flags.contextUpdating"></i>
                 <i class="fa fa-check fa-2x form-control-feedback" ng-if="flags.contextAvailable"></i>
             </div>
@@ -16,7 +16,7 @@
                 <a ng-click="void(0)"  data-toggle="dropdown">{{group}}</a>
                 <ul class="dropdown-menu">
                     <li ng-repeat="widget in widgetDefs | groupFilter: group">
-                        <a href="#" ng-click="addWidgetInternal($event, widget); vm.addWidgetToURL(widget);">{{widget.title}}</a>
+                        <a ng-click="vm.addWidget($event, widget);">{{widget.title}}</a>
                     </li>
                 </ul>
             </li>
@@ -26,7 +26,11 @@
                    ng-click="loadWidgets(defaultWidgets); vm.addWidgetToURL(defaultWidgets);">Default Widgets</a></li>
             <li>
                 <a href="javascript:void(0);"
-                   ng-click="loadWidgets(emptyWidgets); vm.removeAllWidgetFromURL();">Clear</a></li>
+                   ng-click="loadWidgets(emptyWidgets); vm.removeAllWidgetFromURL();">Clear Widgets</a></li>
+            <li role="presentation" class="divider"></li>
+            <li>
+                <a href="javascript:void(0);"
+                   ng-click="vm.removeContainerFromURL();">Reset Dashboard</a></li>
         </ul>
     </div>
     <div class="col-md-2">
@@ -55,12 +59,16 @@
         </form>
     </div>
 </div>
-<div class="row" ng-show="vm.isHostnameExpanded">
+<div class="row" ng-show="vm.isHostnameExpanded" ng-if="!vm.embed">
     <div class="col-md-6">
         <form role="form" name="form">
             <div class="input-group input-group-lg" ng-class="{'has-error': form.hostspec.$invalid && form.hostspec.$dirty}">
                 <span class="input-group-addon">Hostspec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control" id="hostspecInput" name="host" data-content="Please enter the instance hostspec." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="properties.hostspec" ng-change="vm.updateHost()" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" ng-disabled="flags.contextUpdating == true" required placeholder="Instance Hostspec">
+                <input type="text" class="form-control" id="hostspecInput" name="host" data-content="Please enter the instance hostspec." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="properties.hostspec" ng-change="vm.updateHost()" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" ng-disabled="flags.contextUpdating == true || vm.disableSelect" required placeholder="Instance Hostspec">
+            </div>
+            <div class="input-group input-group-lg" ng-show="!vm.enableContainerWidgets">
+                <span class="input-group-addon">Filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <input type="text" class="form-control" id="globalFilterInput" name="globalFilter" data-content="Global filter for container widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.globalFilter" ng-change="vm.updateGlobalFilter()" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" placeholder="Global Filter">
             </div>
         </form>
     </div>
@@ -68,18 +76,18 @@
         <p class="lead" id="hostnameLabel" data-content="PMCD hostname. The hostname from the actual instance you're monitoring." rel="popover" data-placement="bottom" data-trigger="hover" data-container="body">{{flags.contextAvailable && properties.hostname ? properties.hostname : 'Disconnected'}}</p>
     </div>
 </div>
-<div class="row" ng-show="vm.isHostnameExpanded">
+<div class="row" ng-show="vm.enableContainerWidgets">
     <div class="col-md-6">
         <form role="form" name="form">
             <div class="input-group input-group-lg">
-                <span class="input-group-addon">Filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.globalFilter" ng-change="vm.updateFilter()" delay="1000" ng-disabled="flags.contextUpdating == true"  placeholder="Filter">
-                <i class="fa fa-cog fa-spin form-control-feedback" ng-if="flags.filterDone"></i>
+                <span class="input-group-addon" >Container&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <select id="selectedContainer" ng-model="vm.containerName" ng-change="vm.containerNameChanged(); vm.disableSelect = true;" class="form-control">
+                    <option ng-model="vm.disableSelect" ng-disabled="vm.disableSelect" value="">Select a Container</option>
+                    <option ng-repeat="names in vm.containerNames()" ng-selected="vm.selectedContainer == names"> {{names}}</option>
+                </select>
+                <i class="fa fa-check fa-2x form-control-feedback" ng-if="vm.selectedContainerRunning"></i>
             </div>
         </form>
-    </div>
-    <div class="col-md-2">
-        <button id="saveWidgetButton" type="button" ng-model="widgets" class="btn btn-lg btn-default btn-block" ng-click="vm.saveWidget(widgets)">Save</button>
     </div>
 </div>
 <div id="alert-dashboard-error" flash-alert="error" active-class="in alert" class="fade">
@@ -124,8 +132,8 @@
                                 <input type="text" ng-model="widget.title" class="form-control">
                             </form> -->
                             <span class="label label-primary" ng-if="!options.hideWidgetName">{{widget.name}}</span>
-                            <span ng-click="removeWidget(widget); vm.removeWidgetFromURL(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>
-                            <span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings"></span>
+                            <span ng-click="removeWidget(widget);  vm.removeWidgetFromURL(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>
+                            <span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings && widget.type === 3"></span>
                         </h3>
                     </div>
                     <div class="panel-body widget-content" ng-style="widget.contentStyle"></div>
@@ -136,66 +144,13 @@
         </div>
     </div>
 </div>
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Settings</h4>
-      </div>
-      <div class="modal-body">
-        
-        <form role="form" name="modalConfig" ng-model="vm.currentConfig">
-            <div class="input-group input-group-lg">
-
-                <div class="input-group-btn" ng-model="vm.configs">
-                    <button type="button" class="btn btn-default dropdown-toggle input-group-addon setting-modal-config-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Config&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                      <li ng-repeat="config in vm.configs">
-                        <a href="javascript:void(0);" ng-click="vm.renderConfig(config);">{{config.name}}</a></li>
-                    </ul>
-                </div>
-                <input type="text" class="form-control setting-modal-input" ng-model="vm.currentConfig.name" placeholder="Config name" required>
-            
-
-            </div>
-            <div class="input-group input-group-lg">
-                <span class="input-group-addon">Hostname&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control setting-modal-input" name="host" data-container="body" ng-model="vm.currentConfig.host" ng-model-options="{ updateOn: 'default', debounce: 1000 }" delay="1000" ng-disabled="flags.contextUpdating == true" placeholder="Instance Hostname">
-
-            </div>
-            <div class="input-group input-group-lg">
-                <span class="input-group-addon">Hostspec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control setting-modal-input" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.currentConfig.hostspec" ng-change="vm.updateFilter()" delay="1000" ng-disabled="flags.contextUpdating == true"  placeholder="Hostspec">
-                <i class="fa fa-cog fa-spin form-control-feedback" ng-if="flags.filterDone"></i>
-
-            </div>
-            <div class="input-group input-group-lg">
-                <span class="input-group-addon">Filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <input type="text" class="form-control setting-modal-input" data-content="Global filter for widgets" rel="popover" data-placement="bottom" data-trigger="hover" data-container="body" ng-model="vm.currentConfig.globalFilter" ng-change="vm.updateFilter()" delay="1000" ng-disabled="flags.contextUpdating == true"  placeholder="Filter">            
-            </div>
-        </form>
-
-      </div>
-      <div class="modal-footer">
-        <button id="deleteConfigButton" type="button" class="btn btn-default pull-left" ng-click="modalConfig.$valid && vm.deleteConfig(vm.currentConfig.name)">Delete</button>
-        <button id="saveConfigButton" type="button" class="btn btn-default" ng-click="modalConfig.$valid && vm.saveConfig(vm.currentConfig,widgets)">Save</button>
-
-        <button type="button" class="btn btn-default" ng-if="vm.load" ng-click="loadWidgets(vm.currentConfig.activeWidgets); vm.closeConfig();" data-dismiss="modal">Load</button>
-        
-        <button type="button" class="btn btn-default" ng-click="vm.closeConfig();" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-
-  </div>
-</div>
+<div class="row" style="padding-left: 15px; " ng-if="!vm.embed">Version: {{vm.version}}</div>
 <script>
     (function () {
         'use strict';
         $('#hostnameInput').popover();
         $('#hostspecInput').popover();
+        $('#globalFilterInput').popover();
         $('#windowInput').popover();
         $('#intervalInput').popover();
         $('#hostnameLabel').popover();

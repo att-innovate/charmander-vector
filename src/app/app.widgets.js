@@ -25,8 +25,13 @@
     /* Widgets */
     function widgetDefinitions(MetricDataModel,
                                CumulativeMetricDataModel,
-                               containerCPUstatMetricTimeSeriesDataModel,
-                               containerMemoryBytesMetricTimeSeriesDataModel,
+                               ContainerCPUstatMetricTimeSeriesDataModel,
+                               ContainerMemoryBytesMetricTimeSeriesDataModel,
+                               ContainerMemoryUtilizationMetricDataModel,
+                               ContainerNetworkBytesMetricDataModel,
+                               ContainerMultipleCumulativeMetricDataModel,
+                               ContainerMemoryHeadroomAggregateMetricDataModel,
+                               ContainerMemoryHeadroomMetricDataModel,
                                MemoryUtilizationMetricDataModel,
                                NetworkBytesMetricDataModel,
                                CpuUtilizationMetricDataModel,
@@ -37,47 +42,15 @@
                                DiskLatencyMetricDataModel,
                                CumulativeUtilizationMetricDataModel,
                                vectorConfig) {
-
+        var GENERAL = 1;
+        var CONTAINER = 2;
+        var FILTERABLE = 3;
         var onSettingsClose = function(resultFromModal, widgetModel) {
             if (typeof resultFromModal !== 'undefined'){
                 widgetModel.filter = resultFromModal.filter; 
             }    
-        };
-
+        };        
         var definitions = [
-            {
-                name: 'cgroup.cpuacct.stat.user',
-                title: 'CPU Utilization (User)',
-                directive: 'line-time-series',
-                dataAttrName: 'data',
-                dataModelType: containerCPUstatMetricTimeSeriesDataModel,
-                dataModelOptions: {
-                    name: 'cgroup.cpuacct.stat.user',
-                },
-                size: {
-                    width: '50%',
-                    height: '250px'
-                },
-                enableVerticalResize: false,
-                group: 'Container',
-                onSettingsClose: onSettingsClose,
-            },
-            {
-                name: 'cgroup.memory.usage',
-                title: 'Memory Usage',
-                directive: 'line-time-series',
-                dataAttrName: 'data',
-                dataModelType: containerMemoryBytesMetricTimeSeriesDataModel,
-                dataModelOptions: {
-                    name: 'cgroup.memory.usage'
-                },
-                size: {
-                    width: '50%',
-                    height: '250px'
-                },
-                enableVerticalResize: false,
-                group: 'Container',
-            },
             {
                 name: 'kernel.all.load',
                 title: 'Load Average',
@@ -446,13 +419,12 @@
                 title: 'Network Throughput (kB)',
                 directive: 'line-time-series',
                 dataAttrName: 'data',
-                filter:'',
                 dataModelType: NetworkBytesMetricDataModel,
                 dataModelOptions: {
                     name: 'network.interface.bytes'
                 },
                 size: {
-                    width: '100%',
+                    width: '25%',
                     height: '250px'
                 },
                 enableVerticalResize: false,
@@ -460,12 +432,7 @@
                 attrs: {
                     percentage: false,
                     integer: true
-                },
-                settingsModalOptions: {
-                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
-                    controller: 'customWidgetSettingsCtrl'
-                },
-                onSettingsClose: onSettingsClose
+                }
             }, {
                 name: 'disk.iops',
                 title: 'Disk IOPS',
@@ -669,34 +636,259 @@
           });
         }
 
+        if (vectorConfig.enableContainerWidgets) {
+            definitions.push(
+                {
+                    name: 'cgroup.cpuacct.stat.user',
+                title: '*Container CPU Utilization',
+                directive: 'area-stacked-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerCPUstatMetricTimeSeriesDataModel,
+                dataModelOptions: {
+                    name: 'cgroup.cpuacct.stat.user',
+                },
+                size: {
+                    width: '50%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+                type: CONTAINER,
+                attrs: {
+                    forcey: 1,
+                    percentage: true,
+                    integer: false
+                }
+            }, {
+                name: 'cgroup.memory.usage',
+                title: 'Container Memory Usage',
+                directive: 'line-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMemoryBytesMetricTimeSeriesDataModel,
+                dataModelOptions: {
+                    name: 'cgroup.memory.usage'
+                },
+                size: {
+                    width: '50%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+            }, {
+                name: 'container.memory.utilization',
+                title: 'Container Memory Utilization',
+                directive: 'area-stacked-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMemoryUtilizationMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.memory.utilization'
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
+            }, {
+                name: 'container.memory.headroom',
+                title: '*Container Memory Headroom',
+                directive: 'line-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMemoryHeadroomMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.memory.headroom'
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+                type: CONTAINER,
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
+            }, {
+                name: 'container.memory.aggregate.headroom',
+                title: 'Container Memory Aggregate Headroom',
+                directive: 'area-stacked-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMemoryHeadroomAggregateMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.memory.aggregate.headroom'
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                }
+            }, {
+                name: 'container.network.interface.bytes',
+                title: 'Container Network Throughput (kB)',
+                directive: 'line-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerNetworkBytesMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.network.interface.bytes'
+                },
+                size: {
+                    width: '50%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container',
+                attrs: {
+                    percentage: false,
+                    integer: true
+                },
+                type: FILTERABLE,
+                settingsModalOptions: {
+                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
+                    controller: 'customWidgetSettingsCtrl'
+                },
+                onSettingsClose: onSettingsClose,
+                filter: ''       
+            },{
+                name: 'container.disk.iops',
+                title: 'Container Disk IOPS',
+                directive: 'line-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMultipleCumulativeMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.disk.iops',
+                    metricDefinitions: {
+                        '{key} read': 'cgroup.blkio.all.io_serviced.read',
+                        '{key} write': 'cgroup.blkio.all.io_serviced.write'
+                    }
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container'
+            }, {
+                name: 'container.disk.bytes',
+                title: 'Container Disk Throughput (kB)',
+                directive: 'line-time-series',
+                dataAttrName: 'data',
+                dataModelType: ContainerMultipleCumulativeMetricDataModel,
+                dataModelOptions: {
+                    name: 'container.disk.bytes',
+                    metricDefinitions: {
+                        '{key} read': 'cgroup.blkio.all.io_service_bytes.read',
+                        '{key} write': 'cgroup.blkio.all.io_service_bytes.write'
+                    }
+                },
+                size: {
+                    width: '25%',
+                    height: '250px'
+                },
+                enableVerticalResize: false,
+                group: 'Container'
+                }
+            );
+        }
+
         return definitions;
     }
 
     var defaultWidgets = [
         {
-            name: 'cgroup.cpuacct.stat.user',
+            name: 'kernel.all.cpu',
             size: {
-                width: '50%'
+                width: '25%'
             }
         }, {
-            name: 'cgroup.memory.usage',
+            name: 'kernel.percpu.cpu',
             size: {
-                width: '50%'
+                width: '25%'
+            }
+        }, {
+            name: 'kernel.all.runnable',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'kernel.all.load',
+            size: {
+                width: '25%'
             }
         }, {
             name: 'network.interface.bytes',
             size: {
-                width: '100%'
+                width: '25%'
+            }
+        }, {
+            name: 'network.tcpconn',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'network.interface.packets',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'network.tcp.retrans',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'mem',
+            size: {
+                width: '50%'
+            }
+        }, {
+            name: 'mem.vmstat.pgfault',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'kernel.all.pswitch',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'disk.iops',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'disk.bytes',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'disk.dev.avactive',
+            size: {
+                width: '25%'
+            }
+        }, {
+            name: 'disk.dev.latency',
+            size: {
+                width: '25%'
             }
         }
     ];
 
    var emptyWidgets = [];
-
+   var HCTEST = true;
     angular
         .module('app.widgets', [])
         .factory('widgetDefinitions', widgetDefinitions)
         .value('defaultWidgets', defaultWidgets)
-        .value('emptyWidgets', emptyWidgets);
+        .value('emptyWidgets', emptyWidgets)
+        .value('HCTEST', HCTEST);
 
 })();

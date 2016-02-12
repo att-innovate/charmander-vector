@@ -27,16 +27,9 @@
             'interval': 2,  // Default update interval in seconds
             'window': 2,    // Default graph time window in minutes
             'enableCpuFlameGraph': false,
-            'enableDiskLatencyHeatMap': false
-        })
-        .constant('containerConfig', {
-            'functionName': 'containerResolver',//make sure function name is the same as filename
-        })
-        .constant('configFunctions', {
-            'save': 'configSave',//make sure function name is the same as filename
-            'delete': 'configDelete',
-            'check': 'configCheck',
-            'update': 'configUpdate',
-            'load': 'configLoad',
+            'enableDiskLatencyHeatMap': false,
+            'enableContainerWidgets': true,
+        }).constant('containerConfig', {
+            'externalAPI': false //enable and edit containermetadata.service to call external API to resolve
         });
 })();

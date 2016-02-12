@@ -15,15 +15,14 @@
  *     limitations under the License.
  *
  */
-
  (function () {
      'use strict';
 
     /**
-    * @name NetworkBytesMetricDataModel
+    * @name ContainerMultipleCumulativeMetricDataModel
     * @desc
     */
-    function NetworkBytesMetricDataModel(WidgetDataModel, MetricListService, VectorService) {
+    function ContainerMultipleCumulativeMetricDataModel(WidgetDataModel, MetricListService, VectorService) {
         var DataModel = function () {
             return this;
         };
@@ -35,33 +34,30 @@
 
             this.name = this.dataModelOptions ? this.dataModelOptions.name : 'metric_' + VectorService.getGuid();
 
-            // create create base metrics
-            var inMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.in.bytes'),
-                outMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.out.bytes'),
-                derivedFunction;
+            this.metricDefinitions = this.dataModelOptions.metricDefinitions;
 
-            // create derived function
+            var derivedFunction,
+                metrics = {};
+
+            angular.forEach(this.metricDefinitions, function (definition, key) {
+                metrics[key] = MetricListService.getOrCreateCumulativeMetric(definition);
+            });
+
             derivedFunction = function () {
                 var returnValues = [],
                     lastValue;
 
-                var pushReturnValues = function(instance, metricName) {
-                    if (instance.values.length > 0) {
-                        lastValue = instance.values[instance.values.length - 1];
-                        returnValues.push({
-                            timestamp: lastValue.x,
-                            key: instance.key + metricName,
-                            value: lastValue.y / 1024
-                        });
-                    }
-                };
-
-                angular.forEach(inMetric.data, function (instance) {
-                    pushReturnValues(instance, ' in');
-                });
-
-                angular.forEach(outMetric.data, function (instance) {
-                    pushReturnValues(instance, ' out');
+                angular.forEach(metrics, function (metric, key) {
+                    angular.forEach(metric.data, function (instance) {
+                        if (instance.values.length > 0 && instance.key.indexOf('docker/') !==- 1 ) {
+                            lastValue = instance.values[instance.values.length - 1];
+                            returnValues.push({
+                                timestamp: lastValue.x,
+                                key: key.replace('{key}', instance.key),
+                                value: lastValue.y
+                            });
+                        }
+                    });
                 });
 
                 return returnValues;
@@ -78,8 +74,9 @@
             MetricListService.destroyDerivedMetric(this.name);
 
             // remove subscribers and delete base metrics
-            MetricListService.destroyMetric('network.interface.in.bytes');
-            MetricListService.destroyMetric('network.interface.out.bytes');
+            angular.forEach(this.metricDefinitions, function (definition) {
+                MetricListService.destroyMetric(definition);
+            });
 
             WidgetDataModel.prototype.destroy.call(this);
         };
@@ -89,5 +86,5 @@
 
     angular
         .module('app.datamodels')
-        .factory('NetworkBytesMetricDataModel', NetworkBytesMetricDataModel);
+        .factory('ContainerMultipleCumulativeMetricDataModel', ContainerMultipleCumulativeMetricDataModel);
  })();

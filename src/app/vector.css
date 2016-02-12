@@ -69,11 +69,24 @@
      margin-top: 8px;
  }
 
+ #globalFilterInput {
+     margin-left: -1px;
+     margin-top: 8px;
+ }
+
+ form div input[name="widgetFilter"] {
+     margin-left: -1px;
+     margin-top: 0px;
+ }
+
  .input-group-lg > #hostnameInput {
      margin-top: 0;
  }
 
  .input-group-lg > #hostspecInput {
+     margin-top: 0;
+ }
+ .input-group-lg > #globalFilterInput {
      margin-top: 0;
  }
 
@@ -84,8 +97,6 @@
  #hostnameLabel {
     margin-top: 18px;
  }
-
-
 
  .alert,
  .btn {
@@ -116,11 +127,6 @@
  #widgetButton {
      margin-top: 7px;
  }
-
-.widgetInput{
-    margin-left: -1px !important;
-    margin-top: 0px !important;
-}
 
  #welcomeScreen #hostnameInput{
      margin-top: 8px;
@@ -228,34 +234,6 @@
     -webkit-border-radius:6px 0 6px 6px;
     -moz-border-radius:6px 0 6px 6px;
     border-radius:6px 0 6px 6px;
-}
-
-#setting-modal-label {
-    width: 142px;
-    float: left;
-    height: 46px;
-    border-right: 1px solid #ccc;
-    border-top-right-radius: 5px ;
-    border-bottom-right-radius: 5px ;
-    text-align: inherit; 
-}
-
-.setting-modal-button{
-    margin-top: 0px;
-}
-
-.setting-modal-spacer{
-    margin-left: 11px;
-}
-
-.setting-modal-input {
-    margin: 0 !important;
-}
-
-.setting-modal-config-dropdown {
-    margin: 0;
-    width: 143px;
-    margin-top: -3px;
 }
 
 @media screen and (max-width: 1280px) {

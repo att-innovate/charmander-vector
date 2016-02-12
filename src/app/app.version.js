@@ -1,0 +1,1 @@
+(function () { 'use strict'; angular.module('vector.version').constant('vectorVersion', { 'id': 'v1.0.3-9-gf2f6560' }); })();

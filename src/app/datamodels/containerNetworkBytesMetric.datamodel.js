@@ -20,10 +20,10 @@
      'use strict';
 
     /**
-    * @name NetworkBytesMetricDataModel
+    * @name ContainerNetworkBytesMetricDataModel
     * @desc
     */
-    function NetworkBytesMetricDataModel(WidgetDataModel, MetricListService, VectorService) {
+    function ContainerNetworkBytesMetricDataModel(WidgetDataModel, MetricListService, VectorService, ContainerMetadataService) {
         var DataModel = function () {
             return this;
         };
@@ -35,6 +35,7 @@
 
             this.name = this.dataModelOptions ? this.dataModelOptions.name : 'metric_' + VectorService.getGuid();
 
+            var widgetDefinition = this;
             // create create base metrics
             var inMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.in.bytes'),
                 outMetric = MetricListService.getOrCreateCumulativeMetric('network.interface.out.bytes'),
@@ -45,37 +46,42 @@
                 var returnValues = [],
                     lastValue;
 
-                var pushReturnValues = function(instance, metricName) {
-                    if (instance.values.length > 0) {
+                angular.forEach(inMetric.data, function (instance) {
+                    ContainerMetadataService.setCurrentTime(instance.previousTimestamp);
+                    
+                    if (instance.values.length > 0 && instance.key.indexOf('veth') !== -1 && instance.key.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
                         lastValue = instance.values[instance.values.length - 1];
                         returnValues.push({
                             timestamp: lastValue.x,
-                            key: instance.key + metricName,
+                            key: instance.key + ' in',
                             value: lastValue.y / 1024
                         });
                     }
-                };
-
-                angular.forEach(inMetric.data, function (instance) {
-                    pushReturnValues(instance, ' in');
                 });
 
                 angular.forEach(outMetric.data, function (instance) {
-                    pushReturnValues(instance, ' out');
+                    if (instance.values.length > 0 && instance.key.indexOf('veth') !==- 1 && instance.key.indexOf(widgetDefinition.widgetScope.widget.filter) !==-1) {
+                        lastValue = instance.values[instance.values.length - 1];
+                        returnValues.push({
+                            timestamp: lastValue.x,
+                            key: instance.key + ' out',
+                            value: lastValue.y / 1024
+                        });
+                    }
                 });
 
                 return returnValues;
             };
 
             // create derived metric
-            this.metric = MetricListService.getOrCreateDerivedMetric(this.name, derivedFunction);
+            this.metric = MetricListService.getOrCreateDerivedMetric('container.network.interface', derivedFunction);
 
             this.updateScope(this.metric.data);
         };
 
         DataModel.prototype.destroy = function () {
             // remove subscribers and delete derived metric
-            MetricListService.destroyDerivedMetric(this.name);
+            MetricListService.destroyDerivedMetric('container.network.interface');
 
             // remove subscribers and delete base metrics
             MetricListService.destroyMetric('network.interface.in.bytes');
@@ -89,5 +95,5 @@
 
     angular
         .module('app.datamodels')
-        .factory('NetworkBytesMetricDataModel', NetworkBytesMetricDataModel);
+        .factory('ContainerNetworkBytesMetricDataModel', ContainerNetworkBytesMetricDataModel);
  })();
