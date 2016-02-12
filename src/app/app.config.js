@@ -30,6 +30,7 @@
             'enableDiskLatencyHeatMap': false,
             'enableContainerWidgets': true,
         }).constant('containerConfig', {
-            'externalAPI': false //enable and edit containermetadata.service to call external API to resolve
+            'functionName': 'containerResolver',
+            'externalAPI': true //enable and edit containermetadata.service to call external API to resolve
         });
 })();

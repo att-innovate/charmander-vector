@@ -6,7 +6,7 @@
      /**
      * @name ContainerMetadataService
      */
-     function ContainerMetadataService($http, $rootScope, $q, $interval, containerConfig, MetricListService) {
+     function ContainerMetadataService($http, $rootScope, $window, $q, $interval, containerConfig, MetricListService) {
 
         /**
         * @name idDictionary
@@ -48,8 +48,13 @@
             if (containerConfig.externalAPI){
                 //make external api call here to resolve container id
                 //need to set containerConfig.externalAPI to true in app.config.js
+                var dockerId = instanceKey.split('/')[2] || instanceKey;
+                $window[containerConfig.functionName](dockerId, $rootScope.properties).then(function(response){
+                    console.log('inside resolveid:',response);
+                    idMap[dockerId]=response.trim();
+                });
             } else {
-                idDictionary(instanceKey,instanceKey);
+                idDictionary(instanceKey);
             }
         }
 
@@ -87,6 +92,12 @@
 
             if (!containerIdExist(containerName)){
                 getAllContainers();
+            }
+
+            if (containerConfig.externalAPI){
+                for(var keys in idMap){
+                    resolveId(keys);
+                }
             }
         }
 
