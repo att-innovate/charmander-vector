@@ -50,7 +50,6 @@
                 //need to set containerConfig.externalAPI to true in app.config.js
                 var dockerId = instanceKey.split('/')[2] || instanceKey;
                 $window[containerConfig.functionName](dockerId, $rootScope.properties).then(function(response){
-                    console.log('inside resolveid:',response);
                     idMap[dockerId]=response.trim();
                 });
             } else {
@@ -87,6 +86,9 @@
                 if (isTimeCurrent(time)){
                     obj[item.key] = item.key.substring(0,12);
                 }
+                if (containerConfig.externalAPI){
+                    resolveId(item.key);
+                }
                 return obj;
             },{});
 
@@ -94,11 +96,6 @@
                 getAllContainers();
             }
 
-            if (containerConfig.externalAPI){
-                for(var keys in idMap){
-                    resolveId(keys);
-                }
-            }
         }
 
         /**;
