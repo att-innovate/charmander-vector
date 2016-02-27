@@ -1,9 +1,9 @@
 'use strict';
 function containerResolver(id, hostProperties){
 	var deferred = $.Deferred();
-	$.get('http://' + hostProperties.host + ':' + '31300' +'/getid/'+id)
+	$.get('http://' + 'wedge-fb-1'+ ':' + '3000' +'/service?id='+id)
 	.success(function(response){
-	        deferred.resolve(response);
+	    deferred.resolve(response.result);
 	})
 	.error(function(){
 	        deferred.resolve(id.substring(0,12));
