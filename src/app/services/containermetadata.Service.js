@@ -98,7 +98,7 @@
                 if (containerConfig.externalAPI){
                     resolveId(item.key);
                 }
-                if (obj !=''){
+                if (obj !==''){
                     return obj;
                 }
             },{});
@@ -119,7 +119,7 @@
             if (containerConfig.externalAPI){
                 keys = Object.keys(taskNames);
                 tempObj = taskNames;
-            };
+            }
             
             var values = new Array(keys.length);
             for(var i = 0; i < keys.length; i++) {
@@ -132,7 +132,7 @@
         * @name setGlobalFilter
         * @desc deprecated, to be removed later
         */
-        var globalFilter = undefined;
+        var globalFilter;
         function setGlobalFilter(word){
             globalFilter = word;
         }
