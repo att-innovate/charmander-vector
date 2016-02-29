@@ -432,7 +432,14 @@
                 attrs: {
                     percentage: false,
                     integer: true
-                }
+                },
+                type: FILTERABLE,
+                settingsModalOptions: {
+                    templateUrl: 'app/dashboard/custom-widget-settings-template.html',
+                    controller: 'customWidgetSettingsCtrl'
+                },
+                onSettingsClose: onSettingsClose,
+                filter: ''  
             }, {
                 name: 'disk.iops',
                 title: 'Disk IOPS',
