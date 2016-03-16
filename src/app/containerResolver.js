@@ -1,9 +1,16 @@
 'use strict';
 function containerResolver(id, hostProperties){
 	var deferred = $.Deferred();
-	$.get('http://' + 'wedge-fb-1'+ ':' + '3000' +'/service?id='+id)
+	var torc = false;
+	var url = 'http://' + hostProperties.host + ':' + '31300' +'/getid/'+id;
+	if (torc){
+		url = 'http://' + 'wedge-fb-1'+ ':' + '3000' +'/service?id='+id;
+	}
+	
+	$.get(url)
 	.success(function(response){
-	    deferred.resolve(response.result);
+		var result = response.result || response;
+	    deferred.resolve(result);
 	})
 	.error(function(){
 	        deferred.resolve(id.substring(0,12));

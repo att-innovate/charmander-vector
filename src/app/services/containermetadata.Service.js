@@ -54,7 +54,7 @@
                 //need to set containerConfig.externalAPI to true in app.config.js
                 var dockerId = instanceKey.split('/')[2] || instanceKey;
                 $window[containerConfig.functionName](dockerId, $rootScope.properties).then(function(response){
-                    if (response!==''){
+                    if (response !== undefined && response !=='' && response.result !==''){
                         idMap[dockerId]=response.trim();
                         taskNames[dockerId]=response.trim();
                     } else {
