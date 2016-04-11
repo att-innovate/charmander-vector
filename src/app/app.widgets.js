@@ -648,7 +648,7 @@
                 {
                     name: 'cgroup.cpuacct.stat.user',
                     title: 'Container CPU Utilization',
-                    directive: 'area-stacked-time-series',
+                    directive: 'line-time-series',
                     dataAttrName: 'data',
                     dataModelType: ContainerCPUstatMetricTimeSeriesDataModel,
                     dataModelOptions: {
