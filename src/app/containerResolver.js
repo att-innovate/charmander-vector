@@ -8,11 +8,10 @@ function containerResolver(id, hostProperties){
 	}
 	
 	$.get(url)
-	.success(function(response){
+	.then(function(response){
 		var result = response.result || response;
 	    deferred.resolve(result);
-	})
-	.error(function(){
+	},function(){
 	        deferred.resolve(id.substring(0,12));
 	});
 	return deferred.promise();
